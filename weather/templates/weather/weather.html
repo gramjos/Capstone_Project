@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<head>
+<title>Weather or Not It's Hot</title>
+    <style type="text/css">
+.box {
+  transition: box-shadow .3s;
+  width: 300px;
+  height: 150px;
+  margin: 5px;
+  border-radius:10px;
+  border: 1px solid rgb(84, 48, 241);
+  background: #fff;
+  float: left;
+  
+}
+.box:hover {
+  box-shadow: 0 0 18px rgba(42, 0, 250, 0.2); 
+}
+
+/* RAINBOW */
+.rainbow {
+	animation: rainbow 5s ease-in-out infinite;
+	border-radius: 170px 0 0 0;
+	box-shadow: 
+		#FB323C -2px -2px 0 1px,
+		#F99716 -4px -4px 0 3px,
+		#FEE124 -6px -6px 0 5px,
+		#AFDF2E -8px -8px 0 7px,
+		#6AD7F8 -10px -10px 0 9px,
+		#60B1F5 -12px -12px 0 11px,
+		#A3459B -14px -14px 0 13px;
+	height: 70px;
+	width: 70px;
+	margin-left: -40px;
+	position: absolute;
+	left: 100px;
+	top: -41px;
+  	transform: rotate(40deg);
+}
+.rainbow:after {
+	animation: rainbow_shadow 5s ease-in-out infinite;
+	background: #000000;
+	border-radius: 50%;
+	content: '';
+	opacity: 0.2;
+	height: 15px;
+	width: 120px;
+	position: absolute;
+	bottom: -23px; 
+	left: 17px;
+  	transform: rotate(-40deg);
+  	transform-origin: 50% 50%;
+}
+@keyframes rainbow {
+	50% { transform: rotate(50deg); }
+}
+@keyframes rainbow_shadow {
+	50% { transform:  rotate(-50deg) translate(10px) scale(.7); opacity: 0.05; }
+}
+
+
+
+        </style>
+
+</head>
+
+<body>
+
+    <section class="hero is-primary">
+        <div class="hero-body">
+            <div class="container">
+                <div class="rainbow"></div>
+                <h1>What's the Weather like?</h1>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-4 is-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <p>{{ form.name }}</p>
+                            </div>
+                            <div class="control">
+                                <button type="submit" class="button is-info">
+                                    Add City
+                                </button>
+                            </div>
+                        </div>
+                        {% if message %}
+                        <div class="notification {{ message_class }}">{{ message }}</div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section" >
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-4 is-4">
+                    {% for city_weather in weather_data %}
+                    <div class="box" style="background-color:#4fe2b6">
+                        <article class="media" >
+                            <div class="media-left">
+                                <figure class="image is-50x50">
+                                    <img src="http://openweathermap.org/img/w/{{ city_weather.icon }}.png" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <span class="title"><a href="{% url 'detail' city_weather.city %}">{{ city_weather.city }}</a></span>
+                                        <br>
+                                        <span class="subtitle">{{ city_weather.temperature }}</span>
+                                        <br> {{ city_weather.description }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="menu-list">
+                                <ul>
+                                    <li>
+                                        <div class="media-right">
+                                            {% if user.is_authenticated %}
+                                            <a href="{% url 'delete_city' city_weather.city %}">
+                                                <button class="delete"></button>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </li>
+                                    {% if user.is_authenticated %}
+                                    {% if city_weather.city in user.profile.favs %}
+
+                                    {% comment %} So there is a Profile model, but it can be null {% endcomment %}
+                                    <li>
+                                        <div class="media-right">
+                                            <a href="{% url 'del_fav' city_weather.city %}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                        d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </li>
+                                    {% else %}
+                                    <li>
+                                        <div class="media-right">
+                                            {% comment %} empty heart icon {% endcomment %}
+                                            <a href="{% url 'add_fav' city_weather.city %}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </li>
+
+                                    {% endif %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</body>
+{% endblock content %}
