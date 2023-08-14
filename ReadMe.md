@@ -1,4 +1,4 @@
-# Basic weather Application
+# Basic Weather Application
 - This application is longer live. 
 - The images below show the applications functionality 
 ### Technologies Included:
