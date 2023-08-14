@@ -1,3 +1,14 @@
+# Basic weather Application
+- This application is longer live. 
+- The images below show the applications functionality 
+### Technologies Included:
+  - Amazon Web Services to host the site (EC2) and the Relational database (postgres)
+  - Reverse proxy with nginx
+  - Gunicorn to manage daemons 
+![home](ReadMeImages/home.png)
+![cityDetail](ReadMeImages/cityDetail.png)
+![commenting](ReadMeImages/commenting.png)
+![commented](ReadMeImages/commented.png)
 <h3> How to use the requirments.txt file ? </h3>
 <h4>Work Environemrents: Saving and Re-creating</h4>
 <p> 
