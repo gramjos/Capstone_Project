@@ -1,6 +1,6 @@
 # Basic Weather Application
-- This application is longer live. 
-- The images below show the applications functionality 
+- This application is no longer live. 
+- The images below show the functionality 
 ### Technologies Included:
   - Amazon Web Services to host the site (EC2) and the Relational database (postgres)
   - Reverse proxy with nginx
